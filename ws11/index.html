@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Personal Expense History - Single User</title>
+  <style>
+    /* ======= Common CSS (shared across "pages") ======= */
+    :root{
+      --card-w:420px;
+      --accent:#3b82f6;
+      --muted:#6b7280;
+      --glass: rgba(255,255,255,0.85);
+      --btn-radius:10px;
+      --shadow: 0 8px 24px rgba(15,23,42,0.12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0}
+    body{
+      /* meaningful background using an inline SVG + gradient so the page works offline */
+      background-image: linear-gradient(180deg,#eef2ff 0%, #ffffff 60%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%23fef3c7"/><stop offset="1" stop-color="%23fce7f3"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)" opacity="0.06"/></svg>');
+      background-size:cover;
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:0 16px 40px;
+    }
+    /* Navigation bar (visible on all pages) */
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      max-width:1100px;margin:18px auto;padding:10px 14px;background:rgba(255,255,255,0.6);border-radius:12px;box-shadow:var(--shadow)
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:18px;margin:0}
+    .menu{display:flex;gap:8px;align-items:center}
+    .menu button{background:transparent;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+    .menu button:hover{background:rgba(15,23,42,0.06)}
+    .right{display:flex;align-items:center;gap:12px}
+    .user-badge{padding:6px 10px;background:linear-gradient(90deg,#fff,#f8fafc);border-radius:999px;border:1px solid rgba(15,23,42,0.06)}
+    .datetime{font-size:13px;color:var(--muted)}
+
+    /* Card (centered form) */
+    .container{max-width:1100px;margin:28px auto;display:flex;gap:28px;flex-direction:column;align-items:center}
+    .card{width:var(--card-w);background:var(--glass);padding:22px;border-radius:12px;box-shadow:var(--shadow);}
+    h2{margin:0 0 10px 0}
+    p.muted{color:var(--muted);font-size:14px}
+
+    label{display:block;font-size:13px;margin-top:10px;margin-bottom:6px}
+    input[type=text], input[type=email], input[type=number], input[type=date], select{
+      width:100%;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);font-size:14px;box-sizing:border-box
+    }
+    .row{display:flex;gap:10px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:var(--btn-radius);border:0;background:var(--accent);color:white;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(59,130,246,0.18)}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(59,130,246,0.12);box-shadow:none}
+    .btn:disabled{opacity:0.55;cursor:not-allowed}
+
+    /* Expense list in summary */
+    .summary-list{width:90%;max-width:900px;margin:0 auto}
+    table{width:100%;border-collapse:collapse;background:rgba(255,255,255,0.9);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+    th,td{padding:10px;text-align:left;border-bottom:1px solid rgba(15,23,42,0.04)}
+
+    footer{max-width:1100px;margin:22px auto;text-align:center;color:var(--muted)}
+
+    /* small helpers */
+    .muted-sm{font-size:13px;color:var(--muted)}
+    .actions{display:flex;gap:8px;margin-top:12px}
+
+    /* small responsive */
+    @media (max-width:480px){:root{--card-w:320px}.nav{padding:8px}}
+  </style>
+</head>
+<body>
+  <nav class="nav" role="navigation">
+    <div class="brand">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='28' height='28'><rect rx='5' width='24' height='24' fill='%233b82f6'/><text x='50%' y='55%' font-size='12' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'>PE</text></svg>" alt="logo"/>
+      <div>
+        <h1>Personal Expense History</h1>
+        <div class="muted-sm">Single-user local storage app</div>
+      </div>
+    </div>
+
+    <div class="menu" role="menu" aria-label="main menu">
+      <button data-nav="home">Home</button>
+      <button data-nav="user">UserDetail</button>
+      <button data-nav="add">ExpenseMade</button>
+      <button data-nav="summary">Summary</button>
+      <button id="exitBtn">Exit</button>
+    </div>
+
+    <div class="right">
+      <div class="datetime" id="dateTime">--</div>
+      <div class="user-badge" id="userBadge">Not signed</div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- HOME "page" -->
+    <section id="home" class="card" aria-hidden="false">
+      <h2>Welcome!</h2>
+      <p class="muted">This small single-user web application lets you record your personal expenses in your machine's local storage. Use the menu to create your user detail, add expenses and view a summary. All data is stored locally and will persist until you clear your browser storage.</p>
+      <div style="margin-top:12px" class="muted-sm">Features:
+        <ul>
+          <li>Single user details (Name, role, email)</li>
+          <li>Add multiple expenses (amount, category, date)</li>
+          <li>View a summary and total spend</li>
+          <li>All input validated with helpful messages</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- USER DETAIL "page" -->
+    <section id="user" class="card" style="display:none">
+      <h2>User Details</h2>
+      <div id="userView">
+        <!-- if user exists, show details here and Edit button -->
+      </div>
+
+      <form id="userForm" style="display:none" novalidate>
+        <label for="uname">User Name</label>
+        <input id="uname" name="uname" type="text" placeholder="e.g. Bala Subramaniam" required pattern="^[A-Za-z0-9]+(?:[\s][A-Za-z0-9]+){0,2}$" title="Allow single/two/three words (letters or numbers).">
+
+        <label for="uemail">Contact email</label>
+        <input id="uemail" name="uemail" type="email" placeholder="example.xyz@company.co.in" required pattern="^[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*@[A-Za-z0-9]+\.[A-Za-z]{2,}(?:\.[A-Za-z]{2,})?$" title="Valid email like xxx.yz@xxxx.co.in">
+
+        <label for="urole">User Role</label>
+        <select id="urole" name="urole" required>
+          <option value="">-- select role --</option>
+          <option>Student</option>
+          <option>Worker</option>
+          <option>Staff</option>
+          <option>Employer</option>
+        </select>
+
+        <div class="actions">
+          <button type="submit" class="btn" id="saveUser">Submit</button>
+          <button type="button" class="btn secondary" id="cancelUser">Cancel</button>
+        </div>
+      </form>
+
+    </section>
+
+    <!-- ADD EXPENSE "page" -->
+    <section id="add" class="card" style="display:none">
+      <h2>Add Expense</h2>
+      <form id="expenseForm" novalidate>
+        <label for="amount">Amount (nnn.nn)</label>
+        <input id="amount" name="amount" type="text" placeholder="e.g. 120.50" required pattern="^\d+(?:\.\d{1,2})?$" title="Number in nnn.nn format (up to 2 decimals)">
+
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">-- select category --</option>
+          <option>Food</option>
+          <option>Stationary</option>
+          <option>Entertainment</option>
+          <option>Travel</option>
+          <option>Groceries</option>
+          <option>Other</option>
+        </select>
+
+        <label for="edate">Date (from 01/10/2024 to today)</label>
+        <input id="edate" name="edate" type="date" required>
+
+        <div class="actions">
+          <button type="submit" class="btn" id="saveExpense">Save</button>
+          <button type="button" class="btn secondary" id="addAnother">Add Another Expense</button>
+        </div>
+      </form>
+
+      <div class="muted-sm" style="margin-top:10px">Tip: Use the 'Add Another Expense' button after saving to quickly add more expenses.</div>
+    </section>
+
+    <!-- SUMMARY "page" -->
+    <section id="summary" class="card" style="display:none; width:95%">
+      <h2>Summary</h2>
+      <div id="summaryContent" class="summary-list">
+        <!-- populated by JS -->
+      </div>
+      <div style="margin-top:12px" class="actions">
+        <button id="closeSummary" class="btn secondary">Close (Go to Home)</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Built with ❤️ — data saved to your browser's local storage (key names: <code>userDetails</code> and <code>expenses</code>)</footer>
+
+  <script>
+    // ===== Helper & App logic =====
+    const navButtons = document.querySelectorAll('.menu button[data-nav]');
+    const sections = { home:document.getElementById('home'), user:document.getElementById('user'), add:document.getElementById('add'), summary:document.getElementById('summary') };
+    const userBadge = document.getElementById('userBadge');
+    const dateTimeEl = document.getElementById('dateTime');
+
+    // set min and max for date input (min = 2024-10-01, max = today)
+    const edate = document.getElementById('edate');
+    const minDate = '2024-10-01';
+    function pad(n){return n<10? '0'+n: n}
+    const today = new Date();
+    const maxDate = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+    edate.setAttribute('min', minDate); edate.setAttribute('max', maxDate);
+
+    // date/time widget in navbar (optional feature)
+    function updateDateTime(){ const d=new Date(); dateTimeEl.textContent = d.toLocaleString(); }
+    updateDateTime(); setInterval(updateDateTime,1000);
+
+    // navigation
+    navButtons.forEach(btn=>btn.addEventListener('click',()=>{navigate(btn.dataset.nav)}));
+    function navigate(page){
+      Object.values(sections).forEach(s=>s.style.display='none');
+      sections[page].style.display='block';
+      // when summary opened, refresh content
+      if(page==='summary') renderSummary();
+      if(page==='user') renderUserView();
+      if(page==='add') {
+        // reset form for first-time usage
+        expenseForm.reset();
+      }
+    }
+
+    // Exit button
+    document.getElementById('exitBtn').addEventListener('click',()=>{
+      // try to close window - browsers restrict closing a tab not opened by script
+      window.close();
+      alert('If the window did not close automatically, simply close the browser tab. Local storage is kept intact.');
+    });
+
+    // ========== User form logic ==========
+    const userForm = document.getElementById('userForm');
+    const userView = document.getElementById('userView');
+    const uname = document.getElementById('uname');
+    const uemail = document.getElementById('uemail');
+    const urole = document.getElementById('urole');
+    const saveUserBtn = document.getElementById('saveUser');
+    const cancelUser = document.getElementById('cancelUser');
+
+    // load existing user if present
+    function getUser(){ try{ return JSON.parse(localStorage.getItem('userDetails')) || null }catch(e){ return null } }
+    function setUser(u){ localStorage.setItem('userDetails', JSON.stringify(u)); }
+
+    function renderUserView(){
+      const u = getUser();
+      if(u){
+        userForm.style.display='none';
+        userView.innerHTML = `
+          <div><strong>Name:</strong> ${escapeHtml(u.name)}</div>
+          <div><strong>Email:</strong> ${escapeHtml(u.email)}</div>
+          <div><strong>Role:</strong> ${escapeHtml(u.role)}</div>
+          <div class="actions"><button id="editUser" class="btn secondary">Edit</button></div>
+        `;
+        document.getElementById('editUser').addEventListener('click', ()=>{ openUserForm(u); });
+        userBadge.textContent = u.name;
+      } else {
+        userView.innerHTML = '<div class="muted-sm">No user details found. Please add your details below.</div>';
+        openUserForm();
+      }
+    }
+
+    function openUserForm(u=null){
+      userForm.style.display='block';
+      if(u){ uname.value=u.name; uemail.value=u.email; urole.value=u.role; }
+      else { userForm.reset(); }
+    }
+
+    cancelUser.addEventListener('click', ()=>{ userForm.style.display='none'; renderUserView(); });
+
+    // enable submit only when form valid - using input events
+    [uname,uemail,urole].forEach(el=>el.addEventListener('input', ()=>{ saveUserBtn.disabled = !userForm.checkValidity(); }));
+
+    userForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!userForm.checkValidity()) { userForm.reportValidity(); return; }
+      const userObj = { name: uname.value.trim(), email: uemail.value.trim(), role: urole.value };
+      setUser(userObj);
+      renderUserView();
+      alert('User details saved locally.');
+    });
+
+    // ========== Expense logic ==========
+    const expenseForm = document.getElementById('expenseForm');
+    const amountInput = document.getElementById('amount');
+    const categoryInput = document.getElementById('category');
+    const addAnother = document.getElementById('addAnother');
+    const saveExpenseBtn = document.getElementById('saveExpense');
+
+    function getExpenses(){ try{ return JSON.parse(localStorage.getItem('expenses')) || [] }catch(e){ return [] } }
+    function setExpenses(arr){ localStorage.setItem('expenses', JSON.stringify(arr)); }
+
+    // enable save button when valid
+    [amountInput, categoryInput, edate].forEach(el=>el.addEventListener('input', ()=>{ saveExpenseBtn.disabled = !expenseForm.checkValidity(); }));
+
+    expenseForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!expenseForm.checkValidity()){ expenseForm.reportValidity(); return; }
+      const expense = {
+        amount: parseFloat(amountInput.value).toFixed(2),
+        category: categoryInput.value,
+        date: edate.value
+      };
+      const arr = getExpenses(); arr.push(expense); setExpenses(arr);
+      alert('Expense saved locally.');
+      expenseForm.reset();
+      saveExpenseBtn.disabled = true;
+      // show summary automatically if user wants - we'll stay on add page by default
+    });
+
+    addAnother.addEventListener('click', ()=>{ // mimic quick add: validate current and add
+      if(expenseForm.checkValidity()){
+        const event = new Event('submit'); expenseForm.dispatchEvent(event);
+      } else {
+        expenseForm.reportValidity();
+      }
+    });
+
+    // ========== Summary rendering ==========
+    function renderSummary(){
+      const user = getUser();
+      const expenses = getExpenses();
+      const container = document.getElementById('summaryContent');
+      let html = '';
+      if(!user){ html += '<div class="muted-sm">No user details found. Please add user details first.</div>' }
+      else {
+        html += `<div style="margin-bottom:10px"><strong>User:</strong> ${escapeHtml(user.name)} &nbsp; (<span class="muted-sm">${escapeHtml(user.role)} | ${escapeHtml(user.email)}</span>)</div>`;
+      }
+      if(expenses.length===0) html += '<div class="muted-sm">No expenses recorded yet.</div>';
+      else {
+        html += `<table><thead><tr><th>#</th><th>Date</th><th>Category</th><th>Amount</th></tr></thead><tbody>`;
+        let total = 0;
+        expenses.forEach((ex,i)=>{
+          total += Number(ex.amount);
+          html += `<tr><td>${i+1}</td><td>${escapeHtml(ex.date)}</td><td>${escapeHtml(ex.category)}</td><td>₹ ${Number(ex.amount).toFixed(2)}</td></tr>`;
+        });
+        html += `</tbody><tfoot><tr><th colspan="3">Total</th><th>₹ ${total.toFixed(2)}</th></tr></tfoot></table>`;
+      }
+      container.innerHTML = html;
+    }
+
+    document.getElementById('closeSummary').addEventListener('click', ()=>{ navigate('home'); });
+
+    // small helper to escape HTML
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // initialize app
+    (function init(){
+      // default page
+      navigate('home');
+      renderUserView();
+      // disable buttons initially
+      saveUserBtn.disabled = true; saveExpenseBtn.disabled = true;
+
+      // navigation via URL hash (optional)
+      if(location.hash){ const h = location.hash.replace('#',''); if(sections[h]) navigate(h); }
+      // show username on load if present
+      const u = getUser(); if(u) userBadge.textContent = u.name;
+    })();
+
+  </script>
+</body>
+</html>

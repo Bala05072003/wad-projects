@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DOM Selection Lab</title>
+</head>
+<body>
+  <h2 id="heading">Welcome to DOM Lab</h2>
+  <p id="para1">This is the first paragraph.</p>
+  <p class="intro">This is the second paragraph with class intro.</p>
+  <p class="intro">This is the third paragraph with class intro.</p>
+  <p name="note">This paragraph uses a name attribute.</p>
+
+  <ul>
+    <li class="item">Apple</li>
+    <li class="item">Banana</li>
+    <li class="item">Cherry</li>
+  </ul>
+
+  <button onclick="runCode()">Run</button>
+  <div id="output"></div>
+
+  <script>
+    function runCode() {
+      //Part A
+      document.getElementById("heading").textContent = "DOM Lab in Progress";
+
+      let intros = document.getElementsByClassName("intro");
+      for (let p of intros) {
+        p.style.color = "blue";
+      }
+
+      let totalP = document.getElementsByTagName("p").length;
+      document.getElementById("output").textContent = "Total <p> elements: " + totalP;
+
+      document.getElementsByName("note")[0].style.backgroundColor = "lightgray";
+
+
+      //part B
+      document.querySelector("li").style.fontWeight = "bold";
+      document.querySelector("#para1").textContent += " (Modified)";
+      document.querySelectorAll("li").forEach(li => li.style.color = "green");
+      document.querySelectorAll(".intro").forEach(p => console.log(p.textContent));
+
+
+      //part C
+      let el1 = document.getElementById("para1");
+      let el2 = document.querySelector("#para1");
+      console.log("Same element?", el1 === el2);
+
+      console.log("getElementsByClassName:", document.getElementsByClassName("intro"));
+      console.log("querySelectorAll:", document.querySelectorAll(".intro"));
+
+
+      //part D
+      document.querySelector("ul li:last-child").textContent = "Orange";
+      document.querySelectorAll(".item").forEach((li, i) => {
+        li.textContent = (i + 1) + ". " + li.textContent;
+      });
+      document.getElementsByTagName("p")[1].style.display = "none";
+      document.querySelector("p.intro").style.textDecoration = "underline";
+      let items = document.getElementsByClassName("item");
+      for (let li of items) {
+        li.style.backgroundColor = "lightyellow";
+      }
+
+
+      //part E
+      console.log("Heading tag name:", document.querySelector("#heading").tagName);
+      document.querySelector("[name='note']").style.color = "red";
+      document.querySelectorAll("p").forEach(p => console.log(p.innerHTML));
+      document.getElementById("para1").id = "firstPara";
+      let newLi = document.createElement("li");
+      newLi.textContent = "Grapes";
+      document.querySelector("ul").appendChild(newLi);
+
+
+      //part F
+      document.querySelectorAll("p").forEach(p => {
+        let size = window.getComputedStyle(p).fontSize;
+        let newSize = parseInt(size) + 2 + "px";
+        p.style.fontSize = newSize;
+      });
+
+      document.querySelectorAll("li").forEach(li => {
+        li.style.backgroundColor = "lightgreen";
+      });
+
+      let countIntro = document.querySelectorAll(".intro").length;
+      document.getElementById("output").textContent += " | Intro paragraphs: " + countIntro;
+
+      let tag = "p"; // example: count <p>
+      let elems = document.getElementsByTagName(tag);
+      document.getElementById("output").textContent += " | <" + tag + "> count: " + elems.length;
+
+      document.querySelector("h2").onclick = function() {
+        this.style.color = (this.style.color === "red" ? "black" : "red");
+      };
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p class="intro">Intro Paragraph</p>
+  <p>Normal Paragraph</p>
+  <button onclick="selectPara()">Select by CSS</button>
+
+  <script>
+    function selectPara() {
+      let element = document.querySelector("p.intro"); // CSS selector
+      element.style.fontWeight = "bold";
+    }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Survey Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>University Survey Form</h2>
+        <form id="surveyForm">
+            <!-- Name -->
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" onblur="validateName()">
+            <span id="nameError" class="error"></span>
+
+            <!-- Email -->
+            <label for="email">Email ID:</label>
+            <input type="email" id="email" name="email" onblur="validateEmail()">
+            <span id="emailError" class="error"></span>
+
+            <!-- Password -->
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" onblur="validatePassword()">
+            <span id="passwordError" class="error"></span>
+
+            <!-- Mobile Number -->
+            <label for="mobile">Mobile Number:</label>
+            <input type="text" id="mobile" name="mobile" onblur="validateMobile()">
+            <span id="mobileError" class="error"></span>
+
+            <!-- Date of Birth -->
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" onblur="validateDOB()">
+            <span id="dobError" class="error"></span>
+
+            <!-- Rating -->
+            <label>Rating:</label>
+            <div id="rating">
+                <input type="radio" name="rating" value="1">1 ⭐
+                <input type="radio" name="rating" value="2">2 ⭐
+                <input type="radio" name="rating" value="3">3 ⭐
+                <input type="radio" name="rating" value="4">4 ⭐
+                <input type="radio" name="rating" value="5">5 ⭐
+            </div>
+            <span id="ratingError" class="error"></span>
+
+            <!-- Interests -->
+            <label>Interests:</label>
+            <div id="interests">
+                <input type="checkbox" name="interests" value="Sports">Sports
+                <input type="checkbox" name="interests" value="Music">Music
+                <input type="checkbox" name="interests" value="Coding">Coding
+                <input type="checkbox" name="interests" value="Reading">Reading
+                <input type="checkbox" name="interests" value="Travel">Travel
+            </div>
+            <span id="interestsError" class="error"></span>
+
+            <!-- Buttons -->
+            <div class="buttons">
+                <button type="button" onclick="displayValues()">Display</button>
+                <button type="reset">Reset</button>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

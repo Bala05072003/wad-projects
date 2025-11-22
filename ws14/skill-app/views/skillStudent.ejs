@@ -1,0 +1,9 @@
+<% layout('layout') -%>
+<h2>Search Students by Skill Pattern</h2>
+
+<form method="POST" action="/skillStudent" class="mb-3">
+  <label>Enter skill pattern (regex-like, e.g. "sing" to match singing)</label>
+  <input required name="pattern" class="form-control" placeholder="pattern (case-insensitive)"/>
+  <div class="form-text">Examples: "sing" matches singing, "paint" matches painting, "^c" matches chess/cricket.</div>
+  <button class="btn btn-primary mt-2">Search</button>
+</form>

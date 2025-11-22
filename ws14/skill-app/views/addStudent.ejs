@@ -1,0 +1,39 @@
+<% layout('layout') -%>
+<h2>Add Student</h2>
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<form method="POST" action="/addStudent" id="addForm" novalidate>
+  <div class="mb-3">
+    <label class="form-label">Roll Number</label>
+    <input required pattern="^[A-Za-z0-9-]{1,20}$" title="Alphanumeric, up to 20 chars" class="form-control" name="rollnumber"/>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input required pattern="^[A-Za-z .'-]{2,50}$" title="Only letters and . ' -" class="form-control" name="name"/>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Guardian Phone (optional)</label>
+    <div class="input-group">
+      <span class="input-group-text">📱</span>
+      <input pattern="^[6-9][0-9]{9}$" title="10-digit Indian mobile starting 6-9" class="form-control" name="guardianPhone" />
+    </div>
+    <div class="form-text">Leave blank for day scholar.</div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Skills (choose one or more)</label><br/>
+    <% const SKILLS = ['dance','drawing','painting','singing','storyWriting','chess','cricket','soccer','orchestra'] %>
+    <% SKILLS.forEach(skill => { %>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="skills" value="<%= skill %>" id="s_<%= skill %>">
+        <label class="form-check-label" for="s_<%= skill %>"><%= skill %></label>
+      </div>
+    <% }) %>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Add Student</button>
+</form>

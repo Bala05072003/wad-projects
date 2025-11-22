@@ -1,0 +1,20 @@
+<% layout('layout') -%>
+<h2>Results for pattern: "<%= pattern %>"</h2>
+
+<% if (!results || results.length === 0) { %>
+  <p>No students found</p>
+<% } else { %>
+  <table class="table table-striped">
+    <thead><tr><th>Roll</th><th>Name</th><th>Guardian</th><th>Skills</th></tr></thead>
+    <tbody>
+      <% results.forEach(s => { %>
+        <tr>
+          <td><%= s.rollnumber %></td>
+          <td><%= s.name %></td>
+          <td><%= s.guardianPhone || 'Day Scholar' %></td>
+          <td><%= s.skills.join(', ') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>

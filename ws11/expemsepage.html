@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <li>home</li>
+        <li>userdetail</li>
+        <li>Expensemade</li>
+        <li>summary</li>
+        <li>exit</li>
+    </nav>
+    <form action=""></form>
+    <label for="expense">Expense</label>
+    <input type="text" id="expense" name="expense" placeholder="Enter your expense" required>
+    <label for="amount">Amount</label>
+    <input type="number" id="amount" name="amount" placeholder="Enter the amount" required>
+    <label for="date">Date</label>
+    <input type="date" id="date" name="date" required>
+    <label for="category">Category</label>  
+    <select name="category" id="category" required>
+        <option value="food">Food</option>
+        <option value="transport">Transport</option>
+        <option value="utilities">Utilities</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="other">Other</option>
+    </select>
+    <button type="submit">Add Expense</button>
+    <input type="button" value="View Expenses" onclick="window.location.href='summary.html'">
+    
+    
+</body>
+</html>

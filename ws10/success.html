@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Submitted</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .success-message {
+            color: green;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-message">
+        Form Submitted Successfully!
+    </div>
+
+    <script>
+        const name = sessionStorage.getItem('name');
+        const email = sessionStorage.getItem('email');
+        const rating = sessionStorage.getItem('rating');
+        const interests = sessionStorage.getItem('interests');
+
+        alert(`Name: ${name}\nEmail: ${email}\nRating: ${rating}\nSelected Interests: ${interests}`);
+    </script>
+</body>
+</html>
