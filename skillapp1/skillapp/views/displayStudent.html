@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-4">
+<h3>Display Student By Roll Number</h3>
+
+<form id="dispForm">
+    <input class="form-control mb-2" name="roll" required placeholder="Enter Roll Number">
+    <button class="btn btn-info">Search</button>
+</form>
+
+<hr>
+
+<div id="result"></div>
+
+<script>
+document.getElementById("dispForm").onsubmit = async(e)=>{
+    e.preventDefault();
+    let roll = e.target.roll.value;
+
+    let res = await fetch("/api/student/" + roll);
+    let s = await res.json();
+
+    if(!s) return alert("Not Found");
+
+    document.getElementById("result").innerHTML =
+        `<p><strong>Name:</strong> ${s.name}</p>
+         <p><strong>Skills:</strong> ${s.skills.join(", ")}</p>`;
+};
+</script>
+
+</body>
+</html>

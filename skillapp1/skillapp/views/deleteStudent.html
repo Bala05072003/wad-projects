@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-4">
+
+<h3>Delete Student</h3>
+
+<form id="delForm">
+    <input class="form-control mb-2" name="rollnumber" placeholder="Roll Number" required>
+    <button class="btn btn-danger" type="submit">Delete</button>
+</form>
+
+<script>document.getElementById("delForm").onsubmit = async(e)=>{
+    e.preventDefault();
+    let roll = e.target.rollnumber.value;
+
+    let res = await fetch("http://localhost:3000/api/delete/" + roll, { method: "DELETE" });
+    let data = await res.json();
+
+    alert(data.msg); // Shows "Student not found" if roll number does not exist
+
+    if (data.success) window.location.href = "index.html";
+};
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form id="form-id" action="/api/create" method="post">
+      <input
+        type="text"
+        name="user_name"
+        placeholder="Enter User Name"
+        required
+      />
+      <input type="number" name="age" placeholder="Enter Age" required />
+      <input type="submit" value="Submit" />
+    </form>
+
+    <h1>Listing All the Users</h1>
+    <ul>
+      <%users.forEach((user) => {%>
+      <li>
+        User Name: <%=user.user_name%> Age: <%=user.age%>
+        <a href="/update/<%= user.user_name %>">Update</a>
+        <form action="/api/delete" method="post" style="display: inline">
+          <input
+            type="text"
+            style="display: none"
+            name="user_name"
+            value="<%=user.user_name%>"
+          />
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+      <% }) %>
+    </ul>
+  </body>
+</html>
